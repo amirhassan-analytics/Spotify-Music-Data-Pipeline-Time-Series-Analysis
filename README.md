@@ -1,58 +1,104 @@
-# 🎶 Spotify Data Mining & AI-Based Music Analysis
+# Spotify Music Data Pipeline — Time-Series Analysis
 
-## A Two-Phase Project on Genre Classification, Pattern Discovery, and Time-Series Analysis
+End-to-end data pipeline for the Spotify music dataset: ingestion, cleaning,
+warehousing and time-series analysis. A modern rebuild of the original
+two-phase university project (`Spotify-Music-Analysis-and-Classification-Algorithms`),
+reframed from a machine-learning notebook into a data engineering pipeline —
+ingest once, model in the warehouse, analyse over time.
 
+## What it does
 
-This is a comprehensive two-part project focused on mining insights from the Spotify music dataset, applying both traditional data mining and advanced machine learning techniques. The projects progress from foundational classification and pattern mining (ProjectDM1) to more advanced tasks like time-series analysis, deep learning, and explainable AI (ProjectDM2).
+| Stage | What happens |
+|---|---|
+| Extract | Reads the Spotify track dataset (audio features, genre, popularity, release date) from `data/raw/` |
+| Transform | Removes outliers, normalises audio features, imputes missing values, derives time-series features (rolling popularity, trend) |
+| Load | Loads cleaned tracks into a PostgreSQL star schema (`fact_tracks`, `dim_artist`, `dim_genre`, `dim_date`) |
+| Quality | Null, duplicate and range checks on every load — the pipeline fails if a check fails |
+| Analyse | Time-series analysis of popularity over time; genre classification as the Gold-layer output |
 
-Together, these projects explore how audio features such as tempo, energy, danceability, and others can help classify genres, identify music patterns, and predict popularity trends.
+Results from the original analysis, kept as the Gold-layer output:
+- **Genre classification (k-NN): ~58.5% accuracy**; clustering silhouette **0.452** (DBSCAN)
+- **Popular vs non-popular (XGBoost): 97.1% accuracy**
+- **Rule-based classification: 96% binary accuracy** (e.g. Sleep genre)
 
-# 📁 Phase 1: ProjectDM1 – Genre Classification & Pattern Mining
-## 🎯 Goals:
- ◉ Classify music genres based on audio features
+## Architecture
 
- ◉ Uncover hidden patterns using clustering and association rule mining
+```
+data/raw/spotify.csv
+      │  extract.py
+      ▼
+data/staging/ (cleaned parquet)
+      │  transform.py
+      ▼
+PostgreSQL (sql/schema.sql — star schema)
+      │  load.py
+      ▼
+models/ (staging → marts, SQL)
+      ▼
+analysis.py — time-series + classification
+```
 
- ◉ Predict genre labels using rule-based and statistical models
+## Quick start
 
-## 🛠️ Techniques Used:
-➤ Data Preprocessing: Outlier removal, normalization, transformation
+```bash
+# 1. Place the Spotify dataset in data/raw/ (see data/README.md)
+cp spotify.csv data/raw/
 
-➤ Clustering: K-Means, Hierarchical, DBSCAN (Best Silhouette: 0.452)
+# 2. Start PostgreSQL
+docker compose up -d postgres
 
-➤ Classification Models: Decision Tree, k-NN, Naïve Bayes
+# 3. Install dependencies
+pip install -r requirements.txt
 
-➤ Association Rules: Apriori algorithm (Avg. Lift: 17+)
+# 4. Run the whole pipeline
+python -m src.run_pipeline
 
-➤ Rule-Based Classification: Achieved 96% binary accuracy (e.g., Sleep genre)
+# 5. Run the time-series analysis
+python -m src.analysis
+```
 
-## 📌 Results:
-➤ k-NN achieved ~58.5% accuracy for genre classification
+Or run everything in Docker:
 
-➤ Clustering revealed genre-independent music groupings
+```bash
+docker compose up --build
+```
 
-➤ Strong genre-affiliated rules (e.g., high acousticness = Sleep music)
+## Project structure
 
-# 📁 Phase 2: DM2_Report – Time-Series, Deep Learning & Explainable AI
-## 🎯 Goals:
-◉ Analyze music evolution over time through time-series analysis
+```
+├── README.md
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+├── .env.example
+├── src/
+│   ├── config.py
+│   ├── extract.py
+│   ├── transform.py
+│   ├── load.py
+│   ├── data_quality.py
+│   ├── analysis.py
+│   └── run_pipeline.py
+├── sql/
+│   └── schema.sql
+├── models/
+│   ├── staging_tracks.sql
+│   └── mart_genre_popularity.sql
+├── tests/
+│   └── test_data_quality.py
+├── data/
+│   └── README.md
+└── .github/workflows/ci.yml
+```
 
-◉ Apply CNN, LSTM, and MLP for genre classification
+## How this maps to my experience
 
-◉ Forecast popularity and interpret models using SHAP & LIME
+This is the project behind **Advanced Data Mining & Time-Series Analysis on
+Spotify Dataset** on my CV (Oct 2024 – Feb 2025, Università di Pisa). The
+rebuild adds the engineering the original lacked: a real warehouse, scheduled
+loads, data-quality gates, and a time-series layer a BI tool can read.
 
-## 🛠️ Techniques Used:
-➤ Time-Series Analysis: PAA, Dynamic Time Warping, Shapelet Transform
+## Tech
 
-➤ Deep Learning: CNN (24.1% genre accuracy), LSTM, MLP
-
-➤ Advanced Classification: XGBoost, AdaBoost, Gradient Boosting
-
-Explainable AI: SHAP & LIME to identify key predictors (e.g., danceability, popularity)
-
-## 📌 Results:
-➤ Binary classification (Popular vs Non-Popular): 97.1% accuracy with XGBoost
-
-➤ Deep learning improved feature abstraction but requires larger datasets
-
-➤ SHAP showed interpretability in predicting genre and popularity
+Python · SQL · PostgreSQL · pandas · scikit-learn · XGBoost · Docker ·
+Power BI
