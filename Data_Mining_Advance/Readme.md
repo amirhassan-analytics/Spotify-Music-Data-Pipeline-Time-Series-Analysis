@@ -123,12 +123,3 @@ This was part of our Advanced Data Mining coursework and showcases a full-fledge
 
 ➤ Deep learning works best when large datasets and rich time-context are available
 
-
-# 👥 Authors
-⚡ Amir Hassan
-
-
-# 📫 Contact
-⚡Feel free to connect or collaborate:
-📧 amirhassanunipi29@gmail.com
-
