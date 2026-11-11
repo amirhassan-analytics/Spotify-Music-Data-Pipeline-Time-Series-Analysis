@@ -82,11 +82,3 @@ This project explores data mining techniques on a large Spotify dataset to uncov
 ➤ Association rules can enhance classification, especially in niche genres
 
 ➤ Pattern mining is a valuable tool for understanding genre characteristics and user behavior
-
-# 🧑‍💻 Authors
-⚡ Amir Hassan
-
-
-# 📫 Contact
-⚡ For questions, collaboration, or feedback, feel free to reach out:
-📩 amirhassanunipi29@gmail.com
