@@ -94,7 +94,7 @@ docker compose up --build
 ## How this maps to my experience
 
 This is the project behind **Advanced Data Mining & Time-Series Analysis on
-Spotify Dataset** on my CV (Oct 2024 – Feb 2025, Università di Pisa). The
+Spotify Dataset** on my CV (Oct 2024 – Dec 2025). The
 rebuild adds the engineering the original lacked: a real warehouse, scheduled
 loads, data-quality gates, and a time-series layer a BI tool can read.
 
